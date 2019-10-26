@@ -74,6 +74,32 @@ class SpotifyService
 
     /**
      * @param User $user
+     * @param string $id
+     * @return Playlist
+     * @throws SpotifyApiRequestException
+     */
+    public function getPlaylist(User $user, string $id): Playlist
+    {
+        try {
+            $response = $this->getApiClient($user->getAccessToken())->request(RequestMethods::GET, "v1/playlists/{$id}?fields=id,name,tracks,images");
+        }
+        catch (GuzzleException $ex) {
+            throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $content = json_decode($response->getBody()->getContents(), true);
+
+        if ($response->getStatusCode() !== JsonResponse::HTTP_OK) {
+            throw new SpotifyApiRequestException($content);
+        }
+
+        $result = new Playlist($content);
+
+        return $result;
+    }
+
+    /**
+     * @param User $user
      * @param int $limit
      * @param int $page
      * @return Playlist[]

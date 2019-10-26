@@ -79,7 +79,8 @@ class SpotifyController extends BaseController
         }
 
         try {
-            $playlists = $this->spotifyService->getPlaylistTracks($user, $id, 100, 1);
+            $playlist = $this->spotifyService->getPlaylist($user, $id);
+            $playlists = $this->spotifyService->getPlaylistTracks($user, $id, $playlist->getTotalTracks(), 1);
         } catch (SpotifyApiRequestException $ex) {
             return new JsonResponse($ex->getMessage());
         }

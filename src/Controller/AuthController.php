@@ -23,16 +23,10 @@ class AuthController extends BaseController
 
     /**
      * @Route("/spotify/callback", name="app_spotify_callback")
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function callback(Request $request)
     {
         $code = $request->get('code', null);
-        $error = $request->get('error', null);
-
-        if ($error) {
-            return new JsonResponse('Authentication failed', JsonResponse::HTTP_BAD_REQUEST);
-        }
 
         try {
             $credentials = $this->authService->authenticateCallback($code);
