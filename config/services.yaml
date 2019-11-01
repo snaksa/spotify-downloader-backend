@@ -9,6 +9,8 @@ parameters:
     spotify.redirect.url: '%env(SPOTIFY_REDIRECT_URL)%'
     spotify.api.base.url: '%env(SPOTIFY_API_BASE_URL)%'
     spotify.accounts.base.url: '%env(SPOTIFY_ACCOUNTS_BASE_URL)%'
+    youtube.client.ids: '%env(YOUTUBE_CLIENT_IDS)%'
+    youtube.api.base.url: '%env(YOUTUBE_API_BASE_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -43,3 +45,8 @@ services:
             - "%spotify.client.id%"
             - "%spotify.client.secret%"
             - "%spotify.api.base.url%"
+
+    App\Service\YoutubeService:
+        arguments:
+            - "%youtube.client.ids%"
+            - "%youtube.api.base.url%"

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Exception\NotAuthenticatedException;
@@ -27,12 +26,12 @@ class SpotifyController extends BaseController
 
     public function __construct(SecurityService $securityService, SpotifyService $spotifyService)
     {
-        $this->spotifyService = $spotifyService;
         $this->securityService = $securityService;
+        $this->spotifyService = $spotifyService;
     }
 
     /**
-     * @Route("/me", name="api_spotify_me")
+     * @Route("/me", methods={"GET"}, name="api_spotify_me")
      */
     public function me()
     {
@@ -46,7 +45,7 @@ class SpotifyController extends BaseController
     }
 
     /**
-     * @Route("/me/playlists", name="api_spotify_playlists")
+     * @Route("/me/playlists", methods={"GET"}, name="api_spotify_playlists")
      */
     public function playlists()
     {
@@ -66,7 +65,7 @@ class SpotifyController extends BaseController
     }
 
     /**
-     * @Route("/playlists/{id}/tracks", name="api_spotify_playlist_tracks")
+     * @Route("/playlists/{id}/tracks", methods={"GET"}, name="api_spotify_playlist_tracks")
      * @param string $id
      * @return JsonResponse
      */
