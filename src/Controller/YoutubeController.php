@@ -44,7 +44,8 @@ class YoutubeController extends BaseController
             return new JsonResponse(['error' => 'Not authenticated.'], JsonResponse::HTTP_FORBIDDEN);
         }
 
-        $songs = $request->get('songs', []);
+        $content = json_decode($request->getContent(), true);
+        $songs = array_key_exists('songs', $content) ? $content['songs'] : [];
 
         $urls = $this->youtubeService->findSongs($songs);
 
