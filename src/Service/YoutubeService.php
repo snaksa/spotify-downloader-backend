@@ -46,7 +46,14 @@ class YoutubeService
         foreach ($names as $key => $name) {
             try {
                 for ($i = 0; $i < $clientIdsCount; $i++) {
-                    $response = $this->getApiClient()->request(RequestMethods::GET, "youtube/v3/search?part=snippet&type=video&q={$name}&key={$this->clientIds[$i]}");
+                    $response = $this->getApiClient()->request(RequestMethods::GET, "youtube/v3/search", [
+                        'query' => [
+                            "part" => "snippet",
+                            "type" => "video",
+                            'q' => $name,
+                            'key' => $this->clientIds[$i]
+                        ]
+                    ]);
                     $content = json_decode($response->getBody()->getContents(), true);
 
                     if (array_key_exists('error', $content)) {
@@ -65,6 +72,7 @@ class YoutubeService
                 $result[$key] = null;
             }
         }
+
         return $result;
     }
 
