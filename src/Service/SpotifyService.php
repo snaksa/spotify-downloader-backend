@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Service;
 
@@ -7,43 +7,23 @@ use App\Model\User;
 use App\Model\Playlist;
 use App\Model\Track;
 use App\Constant\RequestMethods;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SpotifyService
 {
     /**
-     * @var Client
+     * @var GuzzleService
      */
-    private $apiClient;
-
-    /**
-     * @var string
-     */
-    private $clientId;
-
-    /**
-     * @var string
-     */
-    private $clientSecret;
-
-    /**
-     * @var string
-     */
-    private $baseUrl;
+    private $guzzleService;
 
     /**
      * SpotifyService constructor.
-     *
-     * @param string $clientId
-     * @param string $clientSecret
+     * @param GuzzleService $guzzleService
      */
-    public function __construct(string $clientId, string $clientSecret, string $baseUrl)
+    public function __construct(GuzzleService $guzzleService)
     {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->baseUrl = $baseUrl;
+        $this->guzzleService = $guzzleService;
     }
 
     /**
@@ -53,12 +33,7 @@ class SpotifyService
      */
     public function getUserInfo(string $token): User
     {
-        try {
-            $response = $this->getApiClient($token)->request(RequestMethods::GET, 'v1/me');
-        }
-        catch (GuzzleException $ex) {
-            throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
-        }
+        $response = $this->guzzleService->getApiClient($token)->request(RequestMethods::GET, 'v1/me');
 
         $content = json_decode($response->getBody()->getContents(), true);
 
@@ -80,12 +55,7 @@ class SpotifyService
      */
     public function getPlaylist(User $user, string $id): Playlist
     {
-        try {
-            $response = $this->getApiClient($user->getAccessToken())->request(RequestMethods::GET, "v1/playlists/{$id}?fields=id,name,tracks,images");
-        }
-        catch (GuzzleException $ex) {
-            throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
-        }
+        $response = $this->guzzleService->getApiClient($user->getAccessToken())->request(RequestMethods::GET, "v1/playlists/{$id}?fields=id,name,tracks,images");
 
         $content = json_decode($response->getBody()->getContents(), true);
 
@@ -93,9 +63,7 @@ class SpotifyService
             throw new SpotifyApiRequestException($content);
         }
 
-        $result = new Playlist($content);
-
-        return $result;
+        return new Playlist($content);
     }
 
     /**
@@ -109,9 +77,8 @@ class SpotifyService
     {
         try {
             // TODO: pass limit and page
-            $response = $this->getApiClient($user->getAccessToken())->request(RequestMethods::GET, 'v1/me/playlists?fields=id,name,tracks,images');
-        }
-        catch (GuzzleException $ex) {
+            $response = $this->guzzleService->getApiClient($user->getAccessToken())->request(RequestMethods::GET, 'v1/me/playlists?fields=id,name,tracks,images');
+        } catch (GuzzleException $ex) {
             throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
         }
 
@@ -143,9 +110,8 @@ class SpotifyService
     {
         try {
             // TODO: pass limit and page
-            $response = $this->getApiClient($user->getAccessToken())->request(RequestMethods::GET, "v1/playlists/{$id}/tracks");
-        }
-        catch (GuzzleException $ex) {
+            $response = $this->guzzleService->getApiClient($user->getAccessToken())->request(RequestMethods::GET, "v1/playlists/{$id}/tracks");
+        } catch (GuzzleException $ex) {
             throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
         }
 
@@ -163,24 +129,5 @@ class SpotifyService
         }
 
         return $result;
-    }
-
-    /**
-     * @param string $authToken
-     * @return Client
-     */
-    public function getApiClient(string $authToken)
-    {
-        if ($this->apiClient == null) {
-            $this->apiClient = new Client([
-                'base_uri' => $this->baseUrl,
-                'headers' => [
-                    'Authorization' => $authToken,
-                ],
-                'http_errors' => false
-            ]);
-        }
-
-        return $this->apiClient;
     }
 }

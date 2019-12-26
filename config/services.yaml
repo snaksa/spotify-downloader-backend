@@ -7,10 +7,10 @@ parameters:
     spotify.client.id: '%env(SPOTIFY_CLIENT_ID)%'
     spotify.client.secret: '%env(SPOTIFY_CLIENT_SECRET)%'
     spotify.redirect.url: '%env(SPOTIFY_REDIRECT_URL)%'
-    spotify.api.base.url: '%env(SPOTIFY_API_BASE_URL)%'
+    spotify.api.base.uri: '%env(SPOTIFY_API_BASE_URL)%'
     spotify.accounts.base.url: '%env(SPOTIFY_ACCOUNTS_BASE_URL)%'
     youtube.client.ids: '%env(YOUTUBE_CLIENT_IDS)%'
-    youtube.api.base.url: '%env(YOUTUBE_API_BASE_URL)%'
+    youtube.api.base.uri: '%env(YOUTUBE_API_BASE_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -33,6 +33,18 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    youtube.guzzle.client:
+        class: App\Services\GuzzleService
+        factory: '@App\Factory\GuzzleServiceFactory'
+        arguments:
+            $baseUri: "%youtube.api.base.uri%"
+
+    spotify.guzzle.client:
+        class: App\Services\GuzzleService
+        factory: '@App\Factory\GuzzleServiceFactory'
+        arguments:
+            $baseUri: "%spotify.api.base.uri%"
+
     App\Service\AuthService:
         arguments:
             - "%spotify.client.id%"
@@ -42,11 +54,9 @@ services:
 
     App\Service\SpotifyService:
         arguments:
-            - "%spotify.client.id%"
-            - "%spotify.client.secret%"
-            - "%spotify.api.base.url%"
+            - "@spotify.guzzle.client"
 
     App\Service\YoutubeService:
         arguments:
             - "%youtube.client.ids%"
-            - "%youtube.api.base.url%"
+            - "@youtube.guzzle.client"

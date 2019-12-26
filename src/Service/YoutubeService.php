@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Service;
 
@@ -9,30 +9,25 @@ use GuzzleHttp\Exception\GuzzleException;
 class YoutubeService
 {
     /**
-     * @var Client
-     */
-    private $apiClient;
-
-    /**
      * @var string[]
      */
     private $clientIds;
 
     /**
-     * @var string
+     * @var GuzzleService
      */
-    private $baseUrl;
+    private $guzzleService;
 
     /**
      * SpotifyService constructor.
      *
      * @param string $clientIds
-     * @param string $baseUrl
+     * @param GuzzleService $guzzleService
      */
-    public function __construct(string $clientIds, string $baseUrl)
+    public function __construct(string $clientIds, GuzzleService $guzzleService)
     {
         $this->clientIds = explode('_APPEND_', $clientIds);
-        $this->baseUrl = $baseUrl;
+        $this->guzzleService = $guzzleService;
     }
 
     /**
@@ -46,7 +41,7 @@ class YoutubeService
         foreach ($names as $key => $name) {
             try {
                 for ($i = 0; $i < $clientIdsCount; $i++) {
-                    $response = $this->getApiClient()->request(RequestMethods::GET, "youtube/v3/search", [
+                    $response = $this->guzzleService->getApiClient()->request(RequestMethods::GET, "youtube/v3/search", [
                         'query' => [
                             "part" => "snippet",
                             "type" => "video",
@@ -74,20 +69,5 @@ class YoutubeService
         }
 
         return $result;
-    }
-
-    /**
-     * @return Client
-     */
-    public function getApiClient()
-    {
-        if ($this->apiClient == null) {
-            $this->apiClient = new Client([
-                'base_uri' => $this->baseUrl,
-                'http_errors' => false
-            ]);
-        }
-
-        return $this->apiClient;
     }
 }
