@@ -44,12 +44,12 @@ class User implements UserInterface, SerializableInterface
 
     public function __construct(array $data)
     {
-        $this->id = $data['id'];
-        $this->name = $data['display_name'];
-        $this->email = $data['email'];
-        $this->country = $data['country'];
-        $this->url = $data['external_urls']['spotify'];
-        $this->images = $data['images'];
+        $this->id = $data['id'] ?? '';
+        $this->name = $data['display_name'] ?? '';
+        $this->email = $data['email'] ?? '';
+        $this->country = $data['country'] ?? '';
+        $this->url = isset($data['external_urls']) ? $data['external_urls']['spotify']  ?? '' : '';
+        $this->images = $data['images'] ?? [];
     }
 
     public function serialize(): array
@@ -170,10 +170,13 @@ class User implements UserInterface, SerializableInterface
 
     /**
      * @param string $token
+     * @return User
      */
-    public function setAccessToken(string $token): void
+    public function setAccessToken(string $token): self
     {
         $this->access_token = $token;
+
+        return $this;
     }
 
     /**
