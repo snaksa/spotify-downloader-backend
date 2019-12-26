@@ -39,32 +39,28 @@ class YoutubeService
         $clientIdsCount = count($this->clientIds);
         $result = [];
         foreach ($names as $key => $name) {
-            try {
-                for ($i = 0; $i < $clientIdsCount; $i++) {
-                    $response = $this->guzzleService->getApiClient()->request(RequestMethods::GET, "youtube/v3/search", [
-                        'query' => [
-                            "part" => "snippet",
-                            "type" => "video",
-                            'q' => $name,
-                            'key' => $this->clientIds[$i]
-                        ]
-                    ]);
-                    $content = json_decode($response->getBody()->getContents(), true);
+            for ($i = 0; $i < $clientIdsCount; $i++) {
+                $response = $this->guzzleService->getApiClient()->request(RequestMethods::GET, "youtube/v3/search", [
+                    'query' => [
+                        "part" => "snippet",
+                        "type" => "video",
+                        'q' => $name,
+                        'key' => $this->clientIds[$i]
+                    ]
+                ]);
+                $content = json_decode($response->getBody()->getContents(), true);
 
-                    if (array_key_exists('error', $content)) {
-                        if ($i + 1 === $clientIdsCount) {
-                            return $result;
-                        }
-                    } else {
-                        $items = $content['items'];
-                        $id = count($items) > 0 ? $items[0]['id']['videoId'] : null;
-
-                        $result[$key] = $id;
-                        break;
+                if (array_key_exists('error', $content)) {
+                    if ($i + 1 === $clientIdsCount) {
+                        return $result;
                     }
+                } else {
+                    $items = $content['items'];
+                    $id = count($items) > 0 ? $items[0]['id']['videoId'] : null;
+
+                    $result[$key] = $id;
+                    break;
                 }
-            } catch (GuzzleException $ex) {
-                $result[$key] = null;
             }
         }
 
