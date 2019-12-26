@@ -37,26 +37,4 @@ class AuthController extends BaseController
 
         return new JsonResponse($this->item($credentials));
     }
-
-    /**
-     * @Route("/spotify/refresh", methods={"POST"}, name="app_spotify_refresh")
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function refreshToken(Request $request)
-    {
-        $refreshToken = $request->get('refreshToken', '');
-
-        try {
-            $credentials = $this->authService->refreshToken($refreshToken);
-        } catch (SpotifyApiRequestException $ex) {
-            return new JsonResponse($ex->getMessage());
-        }
-
-        if (!$credentials->getRefreshToken()) {
-            $credentials->setRefreshToken($refreshToken);
-        }
-
-        return new JsonResponse($this->item($credentials));
-    }
 }

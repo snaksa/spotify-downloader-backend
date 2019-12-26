@@ -85,36 +85,6 @@ class AuthService
     }
 
     /**
-     * @param string $refreshToken
-     * @return Auth
-     * @throws SpotifyApiRequestException
-     */
-    public function refreshToken(string $refreshToken)
-    {
-        try {
-            $response = $this->getAccountsClient()->request(RequestMethods::POST, 'api/token', [
-                RequestOptions::FORM_PARAMS => [
-                    'grant_type' => 'refresh_token',
-                    'refresh_token' => $refreshToken
-                ]
-            ]);
-        }
-        catch (GuzzleException $ex) {
-            throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
-        }
-
-        if($response->getStatusCode() !== JsonResponse::HTTP_OK) {
-            throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
-        }
-
-        $content = json_decode($response->getBody()->getContents(), true);
-
-        $auth = new Auth($content);
-
-        return $auth;
-    }
-
-    /**
      * @param string $authToken
      * @return Client
      */
