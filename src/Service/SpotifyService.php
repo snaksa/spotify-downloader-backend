@@ -60,7 +60,7 @@ class SpotifyService
         $content = json_decode($response->getBody()->getContents(), true);
 
         if ($response->getStatusCode() !== JsonResponse::HTTP_OK) {
-            throw new SpotifyApiRequestException($content);
+            throw new SpotifyApiRequestException();
         }
 
         return new Playlist($content);
@@ -75,17 +75,13 @@ class SpotifyService
      */
     public function getPlaylists(User $user, int $limit, int $page): array
     {
-        try {
-            // TODO: pass limit and page
-            $response = $this->guzzleService->getApiClient($user->getAccessToken())->request(RequestMethods::GET, 'v1/me/playlists?fields=id,name,tracks,images');
-        } catch (GuzzleException $ex) {
-            throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
-        }
+        // TODO: pass limit and page
+        $response = $this->guzzleService->getApiClient($user->getAccessToken())->request(RequestMethods::GET, 'v1/me/playlists?fields=id,name,tracks,images');
 
         $content = json_decode($response->getBody()->getContents(), true);
 
         if ($response->getStatusCode() !== JsonResponse::HTTP_OK) {
-            throw new SpotifyApiRequestException($content);
+            throw new SpotifyApiRequestException();
         }
 
         $playlists = $content['items'];
@@ -108,17 +104,13 @@ class SpotifyService
      */
     public function getPlaylistTracks(User $user, string $id, int $limit, int $page)
     {
-        try {
-            // TODO: pass limit and page
-            $response = $this->guzzleService->getApiClient($user->getAccessToken())->request(RequestMethods::GET, "v1/playlists/{$id}/tracks");
-        } catch (GuzzleException $ex) {
-            throw new SpotifyApiRequestException('Request to Spotify API failed', JsonResponse::HTTP_BAD_REQUEST);
-        }
+        // TODO: pass limit and page
+        $response = $this->guzzleService->getApiClient($user->getAccessToken())->request(RequestMethods::GET, "v1/playlists/{$id}/tracks");
 
         $content = json_decode($response->getBody()->getContents(), true);
 
         if ($response->getStatusCode() !== JsonResponse::HTTP_OK) {
-            throw new SpotifyApiRequestException($content);
+            throw new SpotifyApiRequestException();
         }
 
         $tracks = $content['items'];

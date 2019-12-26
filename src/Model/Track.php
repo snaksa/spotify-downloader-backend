@@ -32,9 +32,9 @@ class Track implements SerializableInterface
      */
     public function __construct(array $data)
     {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
-        $this->artists = $data['artists'];
+        $this->id = $data['id'] ?? '';
+        $this->name = $data['name'] ?? '';
+        $this->artists = $data['artists'] ?? '';
     }
 
     public function serialize(): array
