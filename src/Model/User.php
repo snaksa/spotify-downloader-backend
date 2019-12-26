@@ -90,10 +90,13 @@ class User implements UserInterface, SerializableInterface
 
     /**
      * @param string $name
+     * @return User
      */
-    public function setName(string $name): void
+    public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
