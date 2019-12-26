@@ -8,7 +8,7 @@ parameters:
     spotify.client.secret: '%env(SPOTIFY_CLIENT_SECRET)%'
     spotify.redirect.url: '%env(SPOTIFY_REDIRECT_URL)%'
     spotify.api.base.uri: '%env(SPOTIFY_API_BASE_URL)%'
-    spotify.accounts.base.url: '%env(SPOTIFY_ACCOUNTS_BASE_URL)%'
+    spotify.accounts.base.uri: '%env(SPOTIFY_ACCOUNTS_BASE_URL)%'
     youtube.client.ids: '%env(YOUTUBE_CLIENT_IDS)%'
     youtube.api.base.uri: '%env(YOUTUBE_API_BASE_URL)%'
 
@@ -45,11 +45,17 @@ services:
         arguments:
             $baseUri: "%spotify.api.base.uri%"
 
+    spotify.accounts.guzzle.client:
+        class: App\Services\GuzzleService
+        factory: '@App\Factory\GuzzleServiceFactory'
+        arguments:
+            $baseUri: "%spotify.accounts.base.uri%"
+
     App\Service\AuthService:
         arguments:
+            - "@spotify.accounts.guzzle.client"
             - "%spotify.client.id%"
             - "%spotify.client.secret%"
-            - "%spotify.accounts.base.url%"
             - "%spotify.redirect.url%"
 
     App\Service\SpotifyService:
